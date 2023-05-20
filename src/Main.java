@@ -4,9 +4,9 @@ public class Main {
     public static int bossHealth = 1500;
     public static int bossDamage = 50;
     public static String bossDefence;
-    public static int[] heroesHealth = {470, 460, 450, 600, 800, 400};
-    public static int[] heroesDamage = {10, 15, 20, 0, 15, 20};
-    public static String[] heroesAttackType = {"Physical", "Magical", "Kinetic", "Medic", "Golem", "Lucky"};
+    public static int[] heroesHealth = {270, 260, 250, 700, 200, 300, 250, 230};
+    public static int[] heroesDamage = {15, 20, 25, 5, 10, 0, 15, 5};
+    public static String[] heroesAttackType = {"Physical", "Magical", "Kinetic", "Golem", "Lucky", "Medic", "Berserk", "Thor"};
     public static int roundNumber = 0;
 
     public static void main(String[] args) {
@@ -26,13 +26,15 @@ public class Main {
     public static void playRound() {
         roundNumber++;
         chooseBossDefence();
+        thorSlam();
+        printBossDamage();
         bossHits();
-        missLuckky();
         heroesHit();
-        printStatistics();
+        missLucky();
+        berserkBlockDamage();
         golemTakeDamage();
         medicHealing();
-        printHeath();
+        printStatistics();
     }
 
     public static void bossHits() {
@@ -67,22 +69,13 @@ public class Main {
     }
 
     public static void medicHealing() {
+        Random random = new Random();
+        int randomHealth = random.nextInt(40 - 10) + 10;
         for (int i = 0; i < heroesHealth.length; i++) {
-            if (heroesHealth[i] > 0 && heroesHealth[i] < 100 && heroesHealth[3] > 0) {
-                if (heroesHealth[3] < 100) {
-                    heroesHealth[3] = heroesHealth[3] - bossDamage;
-                }
-                else {
-                    Random random = new Random();
-                    int randomHealth = random.nextInt(40-10) + 10;
-                    heroesHealth[(int)Math.floor(Math.random() * heroesHealth.length)]  += randomHealth;
+            if (heroesHealth[i] > 0 && heroesHealth[i] < 100 && heroesHealth[5] > 0) {
+                    heroesHealth[i] += randomHealth;
                     System.out.println("Медик вылечил героя" + randomHealth);
                     break;
-                }
-                }
-            else if (heroesHealth[3] < 0){
-                heroesHealth[3] = 0;
-                heroesHealth[i] -= bossDamage;
             }
             }
         }
@@ -90,28 +83,54 @@ public class Main {
         int takeDamage = bossDamage / 5;
         int aliveHeroes = 0;
         for (int i = 0; i < heroesHealth.length; i++) {
-            if (heroesHealth[i] > 0 && heroesHealth[4] > 0){
+            if (heroesHealth[i] > 0 && heroesHealth[3] > 0){
                 aliveHeroes ++;
-                heroesHealth[i] -= bossDamage - takeDamage;
-                heroesHealth[4] -= bossDamage - (takeDamage * aliveHeroes);
-
+                heroesHealth[i] += takeDamage;
+                heroesHealth[3] -= bossDamage - (takeDamage * aliveHeroes);
+                if (heroesHealth[4] > 400) {
+                    heroesHealth[4] = 400;
+                }
             }
-            else if (heroesHealth[4] <= 0) {
-                heroesHealth[4] = 0;
+            else if (heroesHealth[3] <= 0) {
+                heroesHealth[3] = 0;
             }
         }
-        System.out.println("Голем поглотил" + (takeDamage * aliveHeroes));
+        System.out.println("Голем поглотил " + (takeDamage * aliveHeroes));
     }
 
-    public static void missLuckky() {
-//        Random random = new Random();
-        boolean Luck = true;
+    public static void berserkBlockDamage() {
+        int blockTakeDamage = bossDamage / 2;
         for (int i = 0; i < heroesHealth.length; i++) {
-            if (heroesHealth[5] > 0) {
-                heroesHealth[5] += 50;
+            if (heroesHealth[i] > 0 && heroesHealth[6] > 0){
+                heroesDamage[6] += blockTakeDamage;
+                heroesHealth[6] += blockTakeDamage;
                 break;
+
+            }
+            else if (heroesHealth[6] <= 0) {
+                heroesHealth[6] = 0;
             }
         }
+        System.out.println("Берсерк поглотил и прибавил " + blockTakeDamage);
+    }
+
+    public static void missLucky() {
+        Random random = new Random();
+        boolean Luck = true;
+            if (heroesHealth[4] > 0) {
+                heroesHealth[4] += bossDamage;
+        }
+    }
+
+    public static void thorSlam() {
+        Random random = new Random();
+        boolean Slam = random.nextBoolean();
+        if (heroesHealth[7] > 0 && Slam==true) {
+            bossDamage = 0;
+        }
+        else{
+            bossDamage = 50;
+            }
     }
 
     public static boolean isGameFinished() {
@@ -153,9 +172,7 @@ public class Main {
                     " health: " + heroesHealth[i] + " damage: " + heroesDamage[i]);
         }
     }
-    public static void printHeath() {
-        for (int i = 0; i < heroesHealth.length; i++) {
-            System.out.println(" health: " + heroesHealth[i]);
-        }
+    public static void printBossDamage() {
+            System.out.println("Урон Босса " + bossDamage);
     }
 }
